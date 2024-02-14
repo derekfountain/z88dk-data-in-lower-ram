@@ -48,10 +48,8 @@ sections.asm. As far as I'm aware, sdcc can't create a new section from
 C code, so you need the assembly language file. You can see from the
 lis file it just does this:
 
-`
-    41                          SECTION CONTENDED
-    42                          org 25000
-`
+>    41                          SECTION CONTENDED
+>    42                          org 25000
 
 That's all the assembly language needs to do to guide the linker.
 
@@ -71,13 +69,11 @@ const uint8_t helloworld[] = "Hello, world!";
 The --constsegCONTENDED option on the build line causes the compiler to
 generate assembly language code which puts the string in the CONTENDED section:
 
-`
-   246                          	SECTION CONTENDED
-   247                          _helloworld:
-   248  0000  48656c6c6f2c2077  	DEFM "Hello, world!"
-              6f726c6421        
-   249  000d  00                	DEFB 0x00
-`
+>   246                          	SECTION CONTENDED
+>   247                          _helloworld:
+>   248  0000  48656c6c6f2c2077  	DEFM "Hello, world!"
+>              6f726c6421        
+>   249  000d  00                	DEFB 0x00
 
 ### dlm.c
 
@@ -87,11 +83,10 @@ zcc +zx -vn -c -clib=sdcc_iy dlm.c -o dlm.o --list --c-code-in-asm
 
 This is the main code which references the string:
 
-`
-extern uint8_t helloworld[];
-...
-  printf("%s\n", helloworld);
-`
+
+>extern uint8_t helloworld[];
+>...
+>  printf("%s\n", helloworld);
 
 ## Link the pieces into separate binaries
 
