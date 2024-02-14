@@ -4,7 +4,7 @@ set -x
 
 # Assemble the sections definition code
 #
-zcc +zx -vn -c -clib=sdcc_iy sections.asm -o sections.o --list
+zcc +zx -vn -c sections.asm -o sections.o --list
 
 # Compile the C code which contains the const data to go into low memory.
 # The --constseg option ensures the data in the C code goes into the
