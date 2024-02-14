@@ -26,7 +26,7 @@ zcc +zx -vn -startup=5 -clib=sdcc_iy dlm.o sections.o low_data.o -o dlmlinked -m
 
 # Now glue the *.bin files together. This (silently) uses the memory map created
 # by the previous step to arrange the sections and fill in the gaps between them.
-# The output of this is a single binary file which everything in it, all in the
+# The output of this is a single binary file with everything in it, all in the
 # right place. You can insert this binary directly into an emulated Spectrum's
 # memory using, for example with Fuse, File->Load binary data. For this example
 # you should put it at 25000.
