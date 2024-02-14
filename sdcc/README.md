@@ -13,7 +13,7 @@ map.
 
 ## How it works
 
-SDCC uses sections to store blocks of code and data. It will then link
+SDCC uses _sections_ to store blocks of code and data. It will then link
 each section into the final output based on origin instructions, command
 line arguments, etc.
 
@@ -48,7 +48,7 @@ zcc +zx -vn -c -clib=sdcc_iy sections.asm -o sections.o --list
 The new section "CONTENDED" is defined in an assembly language file called
 sections.asm. As far as I'm aware, sdcc can't create a new section from
 C code, so you need the assembly language file. You can see from the
-lis file it just does this:
+_sections.asm.lis_ file it just does this:
 
 ```
     41                          SECTION CONTENDED
@@ -97,13 +97,17 @@ extern uint8_t helloworld[];
 
 ## Link the pieces into separate binaries
 
+The above commands are "compile-only". They compile the source into an
+object, then stop. Next step is to use the linker to fix up each object's
+absolute addresses.
+
 ```
 zcc +zx -vn -startup=5 -clib=sdcc_iy dlm.o sections.o low_data.o -o dlmlinked -m -s
 ```
 
-Caller the linker to create a linked object for each piece. The output of this step is one
-*.bin file per section defined, and a memory map file called dmlinked.map which
-explains where everything is supposed to go.
+This line calls the linker to create a linked object for each piece. The output
+of this step is one *.bin file per section defined, and a memory map file called
+_dmlinked.map_ which explains where everything is supposed to go.
 
 ## Glue the binary pieces together
 
@@ -115,7 +119,8 @@ This (silently) uses the memory map created by the previous step to arrange
 the sections and fill in the gaps between them. The output of this is a single
 binary file with everything in it, all in the right place. You can insert this
 binary directly into an emulated Spectrum's memory using, for example with
-Fuse, File->Load binary data. For this example you should put it at 25000.
+Fuse, _File->Load binary data_. For this example you should put it at 25000 at
+if all is well it'll work when you _RANDOMISE USR 32768_.
 
 ## Create an application (TAP file)
 
@@ -123,6 +128,6 @@ Fuse, File->Load binary data. For this example you should put it at 25000.
 z88dk-appmake +zx --org 25000 -b dlmlinked__.bin --blockname dlm -o dlm.tap --usraddr=32768
 ```
 
-The application maker createa the BASIC loader which will load the code
+The application maker creates the BASIC loader which will load the code
 (in dlmlinked__.bin) at the required origin (25000) and override the default execution
 start point (which would be 25000) with the --usraddr address.
