@@ -13,9 +13,9 @@ map.
 
 ## How it works
 
-_* Note that I'm not very familiar with the sccz80 compiler. It wasn't hard
-to work it out, but details may be wrong. Anything in here which looks a bit
-off is probably my mistake. *_
+** Note that I'm not very familiar with the sccz80 compiler. It wasn't hard
+to work it out, but anything in here which looks a bit off is probably my
+mistake. **
 
 sccz80 uses _sections_ to store blocks of code and data. It will then link
 each section into the final output based on origin instructions, command
@@ -23,8 +23,8 @@ line arguments, etc.
 
 sccz80 will automatically create a section called CONTENDED if the origin
 of the code is below 32768. In theory you can force the compiler to build
-low_data.c such that the constants appear in that section. In practise,
-although I could see that changing the origin does cause that section to
+the source file _low_data.c_ such that the constants appear in that section.
+In practise, although I could see that changing the origin does cause that section to
 appear, I couldn't get any control over where data or code actually went.
 So I gave up on that and went for the split build approach.
 
