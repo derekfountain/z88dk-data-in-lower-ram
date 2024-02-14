@@ -13,9 +13,9 @@ map.
 
 ## How it works
 
-** Note that I'm not very familiar with the sccz80 compiler. It wasn't hard
+**Note that I'm not very familiar with the sccz80 compiler. It wasn't hard
 to work it out, but anything in here which looks a bit off is probably my
-mistake. **
+mistake.**
 
 sccz80 uses _sections_ to store blocks of code and data. It will then link
 each section into the final output based on origin instructions, command
