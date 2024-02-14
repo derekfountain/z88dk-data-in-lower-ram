@@ -12,7 +12,6 @@ See the contents of the directories for examples and explanations.
 
 The sdcc directory contains the example written for the zsdcc compiler.
 
-I'll do a sccz80 version when I work out how to do it. Or when someone
-shows me. :)
+The sccz80 directory contains the example written for the sccz80 compiler.
 
 [Derek Fountain](https://www.derekfountain.org/), February 2024

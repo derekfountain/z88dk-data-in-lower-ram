@@ -1,4 +1,4 @@
-# z88dk-data-in-lower-ram, SDCC version
+# z88dk-data-in-lower-ram, sccz80 version
 
 The object of this exercise is to create a program for the ZX Spectrum
 which starts off with the code at 0x8000 (32768, the start of the
@@ -13,16 +13,28 @@ map.
 
 ## How it works
 
-SDCC uses _sections_ to store blocks of code and data. It will then link
+_* Note that I'm not very familiar with the sccz80 compiler. It wasn't hard
+to work it out, but details may be wrong. Anything in here which looks a bit
+off is probably my mistake. *_
+
+sccz80 uses _sections_ to store blocks of code and data. It will then link
 each section into the final output based on origin instructions, command
 line arguments, etc.
+
+sccz80 will automatically create a section called CONTENDED if the origin
+of the code is below 32768. In theory you can force the compiler to build
+low_data.c such that the constants appear in that section. In practise,
+although I could see that changing the origin does cause that section to
+appear, I couldn't get any control over where data or code actually went.
+So I gave up on that and went for the split build approach.
 
 z88dk defines a whole bunch of sections to store the code it generates.
 The method used here is to create a new section which goes into lower,
 contended memory, an area the normal section definitions ignore by
 default.
 
-The new section used here is called "CONTENDED".
+The new section used here is called "CONTENDED", same as the automatically
+created one. I'm not sure if that was a good idea.
 
 ## Run the build script
 
@@ -46,7 +58,7 @@ zcc +zx -vn -c sections.asm -o sections.o --list
 ```
 
 The new section "CONTENDED" is defined in an assembly language file called
-sections.asm. As far as I'm aware, sdcc can't create a new section from
+sections.asm. As far as I'm aware, sccz80 can't create a new section from
 C code, so you need the assembly language file. You can see from the
 _sections.asm.lis_ file it just does this:
 
@@ -60,7 +72,7 @@ That's all the assembly language needs to do to guide the linker.
 ### low_data.c
 
 ```
-zcc +zx -vn -c --constsegCONTENDED -clib=sdcc_iy low_data.c -o low_data.o --list --c-code-in-asm
+zcc +zx --constsegCONTENDED -c low_data.c -o low_data.o -compiler=sccz80 -clib=default -lndos -s -m --list --c-code-in-asm
 ```
 
 This C file contains the constant data which needs to go into lower
@@ -74,17 +86,21 @@ The --constsegCONTENDED option on the build line causes the compiler to
 generate assembly language code which puts the string in the CONTENDED section:
 
 ```
-   246                          	SECTION CONTENDED
-   247                          _helloworld:
-   248  0000  48656c6c6f2c2077  	DEFM "Hello, world!"
+    18                          ;const uint8_t helloworld[] = "Hello, world!";
+    18                          	C_LINE	20,"low_data.c"
+    20                          	C_LINE	20,"low_data.c"
+    20                          	SECTION	CONTENDED
+    20                          ._helloworld
+    20  0000  48656c6c6f2c2077  	defm	"Hello, world!"
               6f726c6421        
-   249  000d  00                	DEFB 0x00
+    20  000d  00                	defb	0
+    20                          
 ```
 
 ### dlm.c
 
 ```
-zcc +zx -vn -c -clib=sdcc_iy dlm.c -o dlm.o --list --c-code-in-asm
+zcc +zx -c dlm.c -o dlm.o -compiler=sccz80 -clib=default -lndos -s -m --list --c-code-in-asm
 ```
 
 This is the main code which references the string:
@@ -102,12 +118,12 @@ object, then stop. Next step is to use the linker to fix up each object's
 absolute addresses.
 
 ```
-zcc +zx -vn -startup=5 -clib=sdcc_iy dlm.o sections.o low_data.o -o dlmlinked -m -s
+zcc +zx -vn sections.o dlm.o low_data.o -o dlmlinked -compiler=sccz80 -clib=default -lndos -m -s
 ```
 
 This line calls the linker to create a linked object for each piece. The output
-of this step is one *.bin file per section defined, and a memory map file called
-_dmlinked.map_ which explains where everything is supposed to go.
+of this step is a file called _dlmlinked_, a _dlmlinked_CONTENDED.bin_, and a memory
+map file called _dmlinked.map_ which explains where everything is supposed to go.
 
 ## Glue the binary pieces together
 
